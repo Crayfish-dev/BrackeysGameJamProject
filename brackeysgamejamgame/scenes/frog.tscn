@@ -1,0 +1,83 @@
+[gd_scene load_steps=11 format=3 uid="uid://dynrp0nqo54ff"]
+
+[ext_resource type="Script" uid="uid://1nbdstt2hf6u" path="res://scripts/frog.gd" id="1_qyo2l"]
+[ext_resource type="Texture2D" uid="uid://qlbq4ay2eq4n" path="res://icon.svg" id="2_qyo2l"]
+[ext_resource type="Texture2D" uid="uid://26sdktpw8cq3" path="res://assets/bite.png" id="3_rq8tc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rq8tc"]
+size = Vector2(12, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qyo2l"]
+size = Vector2(14, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1g2vb"]
+atlas = ExtResource("3_rq8tc")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ybftx"]
+atlas = ExtResource("3_rq8tc")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ifle"]
+atlas = ExtResource("3_rq8tc")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_uu7fg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1g2vb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ybftx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ifle")
+}],
+"loop": false,
+"name": &"bite",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qyo2l"]
+radius = 26.0192
+
+[node name="Frog" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
+script = ExtResource("1_qyo2l")
+sprite = NodePath("Sprite2D")
+hp = 50
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("2_qyo2l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_rq8tc")
+
+[node name="Pivot" type="Node2D" parent="."]
+
+[node name="DamageShape" type="Area2D" parent="Pivot"]
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/DamageShape"]
+position = Vector2(13, 0)
+shape = SubResource("RectangleShape2D_qyo2l")
+debug_color = Color(0.991729, 0, 0.261704, 0.42)
+
+[node name="Bite" type="AnimatedSprite2D" parent="Pivot"]
+visible = false
+position = Vector2(15, 0)
+sprite_frames = SubResource("SpriteFrames_uu7fg")
+animation = &"bite"
+frame = 2
+frame_progress = 1.0
+
+[node name="Detector" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detector"]
+shape = SubResource("CircleShape2D_qyo2l")
+
+[connection signal="body_entered" from="Pivot/DamageShape" to="." method="_on_damage_shape_body_entered"]
+[connection signal="animation_finished" from="Pivot/Bite" to="." method="_on_bite_animation_finished"]
+[connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]

@@ -1,0 +1,92 @@
+[gd_scene load_steps=12 format=3 uid="uid://bp1ls7o032ooh"]
+
+[ext_resource type="Script" uid="uid://b4cb211my8d8s" path="res://scenes/archer.gd" id="1_b0l3x"]
+[ext_resource type="Texture2D" uid="uid://qlbq4ay2eq4n" path="res://icon.svg" id="1_jggnj"]
+[ext_resource type="Texture2D" uid="uid://b5fktnyqdy1g8" path="res://assets/arrow.png" id="3_orquw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jggnj"]
+size = Vector2(12, 12)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b0l3x"]
+radius = 76.1052
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b0l3x"]
+size = Vector2(70, 6)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cctdm"]
+atlas = ExtResource("3_orquw")
+region = Rect2(0, 0, 128, 2)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ejvcm"]
+atlas = ExtResource("3_orquw")
+region = Rect2(128, 0, 128, 2)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c85qa"]
+atlas = ExtResource("3_orquw")
+region = Rect2(256, 0, 128, 2)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vlvv2"]
+atlas = ExtResource("3_orquw")
+region = Rect2(384, 0, 128, 2)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d71b8"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cctdm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ejvcm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c85qa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vlvv2")
+}],
+"loop": false,
+"name": &"shoot",
+"speed": 15.0
+}]
+
+[node name="Archer" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
+script = ExtResource("1_b0l3x")
+damage = 80
+sprite = NodePath("Icon")
+hp = 10
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_jggnj")
+
+[node name="Icon" type="Sprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("1_jggnj")
+
+[node name="Detector" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detector"]
+shape = SubResource("CircleShape2D_b0l3x")
+
+[node name="Pivot" type="Node2D" parent="."]
+
+[node name="DamageShape" type="Area2D" parent="Pivot"]
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/DamageShape"]
+position = Vector2(41, 0)
+shape = SubResource("RectangleShape2D_b0l3x")
+debug_color = Color(0.956537, 0.163758, 0.337378, 0.42)
+
+[node name="arrow" type="AnimatedSprite2D" parent="Pivot"]
+visible = false
+position = Vector2(41, 0)
+scale = Vector2(0.53125, 1)
+sprite_frames = SubResource("SpriteFrames_d71b8")
+animation = &"shoot"
+frame = 3
+frame_progress = 1.0
+
+[connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
+[connection signal="body_entered" from="Pivot/DamageShape" to="." method="_on_damage_shape_body_entered"]
+[connection signal="animation_finished" from="Pivot/arrow" to="." method="_on_arrow_animation_finished"]
