@@ -1,7 +1,8 @@
 extends Enemy
 
-@onready var player: PlayerController = $"../Player"
+@onready var player: PlayerController = $"../../../Player"
 @onready var chasing_area: Area2D = $ChasingArea
+@onready var emotion: AnimatedSprite2D = $EmotionPoint
 
 
 
@@ -17,6 +18,12 @@ var knockback_velocity: Vector2 = Vector2.ZERO
 var knockback_friction: float = 10000000000000000000.0  # Adjust this to control how fast knockback slows
 
 func _physics_process(delta: float) -> void:
+	
+	if velocity.length() > 0:
+		sprite.play("fly")
+	else:
+		sprite.play("idle")
+
 	
 	if hp <= 0 or hp == 0:
 		queue_free()
@@ -56,8 +63,9 @@ func _on_chasing_area_body_entered(body: PlayerController) -> void:
 	reposition_timer = 0.0
 
 func _on_chasing_area_body_exited(body: PlayerController) -> void:
+	emotion.play("exclamation")
 	is_chasing = false
 
 
 func _on_blood_area_body_entered(body: PlayerController) -> void:
-	body.blood -= 5
+	body.blood -= 10

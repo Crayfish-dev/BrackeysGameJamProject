@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dyya7xaxc17e8" path="res://assets/health.png" id="5_p8nh0"]
 
 [node name="Camera" type="Camera2D"]
-zoom = Vector2(4, 4)
+zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 script = ExtResource("1_cvpoc")
 
@@ -16,10 +16,10 @@ scale = Vector2(5, 5)
 transform = Transform2D(5, 0, 0, 5, 0, 0)
 
 [node name="BloodBar" type="TextureProgressBar" parent="CanvasLayer"]
-offset_left = 2.6
-offset_top = 2.2
-offset_right = 21.6
-offset_bottom = 34.2
+offset_left = 3.0
+offset_top = 2.0
+offset_right = 19.0
+offset_bottom = 34.0
 fill_mode = 3
 texture_under = ExtResource("2_tmlye")
 texture_progress = ExtResource("3_gtx3x")

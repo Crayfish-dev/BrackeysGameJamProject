@@ -10,7 +10,9 @@ var deceleration: float = 1000.0  # Lower = slower stop, tweak as needed
 
 func _physics_process(delta: float) -> void:
 	if hp <= 0 or hp == 0:
+		await get_tree().create_timer(0.3).timeout
 		queue_free()
+
 	
 	# Just apply deceleration to stop smoothly
 	velocity = lerp(velocity, Vector2.ZERO, delta * deceleration)
@@ -23,7 +25,7 @@ func take_damage(dm: int):
 	is_chasing = false
 	hp -= dm
 	immune = true
-	sprite.modulate = Color(0, 0, 0)
+	sprite.modulate = Color(255, 0, 0)
 	await get_tree().create_timer(0.5).timeout
 	is_chasing = true
 	immune = false

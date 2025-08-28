@@ -1,10 +1,11 @@
 extends Enemy
 
 @onready var pivot: Node2D = $Pivot
-@onready var player: PlayerController = $"../Player"
+@onready var player: PlayerController = $"../../../Player"
 @onready var shape: Area2D = $Pivot/DamageShape
 @onready var detector: Area2D = $Detector
 @onready var arrow: AnimatedSprite2D = $Pivot/arrow
+@onready var emotion: AnimatedSprite2D = $EmotionPoint
 
 # Movement behavior
 var move_speed: float = 60.0
@@ -12,6 +13,11 @@ var min_distance: float = 60.0  # too close, move away
 var max_distance: float = 160.0  # too far, move closer
 
 func _physics_process(delta: float) -> void:
+	
+	if velocity.length() > 0:
+		sprite.play("walk")
+	else:
+		sprite.play("idle")
 	
 	if hp <= 0 or hp == 0:
 		queue_free()
@@ -52,7 +58,7 @@ func _on_damage_shape_body_entered(body: PlayerController) -> void:
 	velocity += player_knockback
 
 func _on_detector_body_entered(body: PlayerController) -> void:
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.8).timeout
 	shape.monitoring = true
 	arrow.visible = true
 	arrow.play("shoot")
@@ -62,10 +68,10 @@ func _on_detector_body_entered(body: PlayerController) -> void:
 func _on_arrow_animation_finished() -> void:
 	arrow.visible = false
 
-func _on_chasing_area_body_entered(body: Node2D) -> void:
-	if body == player:
-		is_chasing = true
+func _on_chasing_area_body_entered(body: PlayerController) -> void:
+	emotion.play("exclamation")
+	is_chasing = true
 
-func _on_chasing_area_body_exited(body: Node2D) -> void:
-	if body == player:
-		is_chasing = false
+func _on_chasing_area_body_exited(body: PlayerController) -> void:
+	emotion.play("wonder")
+	is_chasing = false

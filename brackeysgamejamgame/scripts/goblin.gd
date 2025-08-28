@@ -1,17 +1,15 @@
 extends Enemy
 
-@onready var pivot: Node2D = $Pivot
+@onready var explosion: AnimatedSprite2D = $Explosion
 @onready var player: PlayerController = $"../../../Player"
-@onready var shape: Area2D = $Pivot/DamageShape
-@onready var detector: Area2D = $Detector
-@onready var bite: AnimatedSprite2D = $Pivot/Bite
 @onready var emotion: AnimatedSprite2D = $EmotionPoint
-
+var exploding: bool = false
+@onready var damage_area: Area2D = $DamageArea
 # Chasing behavior
 var move_speed: float = 70.0
 var target_position: Vector2
-var target_reached_threshold: float = 15.0
-var reposition_interval: float = 2
+var target_reached_threshold: float = 30.0
+var reposition_interval: float = 1.0
 var reposition_timer: float = 0.0
 
 # Knockback velocity and friction
@@ -20,12 +18,10 @@ var knockback_friction: float = 10000000000000000000.0  # Adjust this to control
 
 func _physics_process(delta: float) -> void:
 	
-	if hp <= 0 or hp == 0:
-		queue_free()
 	
 	var move_velocity = Vector2.ZERO  # Declare once here
 
-	if is_chasing and player:
+	if is_chasing and player and !exploding:
 		reposition_timer -= delta
 
 		if reposition_timer <= 0.0 or global_position.distance_to(target_position) < target_reached_threshold:
@@ -43,7 +39,7 @@ func _physics_process(delta: float) -> void:
 	velocity = move_velocity + knockback_velocity
 	move_and_slide()
 
-	if sprite:
+	if exploding == false:
 		if velocity.length() < 10:
 			if abs(velocity.y) > abs(velocity.x):
 				if velocity.y < 0:
@@ -60,11 +56,9 @@ func _physics_process(delta: float) -> void:
 					sprite.play("front_walk")
 			else:
 				sprite.play("front_walk")
+	else:
+		sprite.play("explode")
 
-
-func _process(delta: float) -> void:
-	if player:
-		pivot.look_at(player.position)
 
 func get_random_position_near_player(radius: float = 100.0) -> Vector2:
 	var angle = randf() * TAU
@@ -84,17 +78,6 @@ func _on_damage_shape_body_entered(body: PlayerController) -> void:
 	var player_knockback = -knockback_direction * player_knockback_strength
 	knockback_velocity += player_knockback 
 
-func _on_detector_body_entered(body: PlayerController) -> void:
-	await get_tree().create_timer(0.3).timeout
-	shape.monitoring = true
-	bite.visible = true
-	bite.play("bite")
-	await get_tree().create_timer(0.1).timeout
-	shape.monitoring = false
-
-func _on_bite_animation_finished() -> void:
-	bite.visible = false
-
 func _on_chasing_area_body_entered(body: PlayerController) -> void:
 	emotion.play("exclamation")
 	is_chasing = true
@@ -104,3 +87,21 @@ func _on_chasing_area_body_entered(body: PlayerController) -> void:
 func _on_chasing_area_body_exited(body: PlayerController) -> void:
 	emotion.play("wonder")
 	is_chasing = false
+
+
+func _on_explosion_area_body_entered(body: PlayerController) -> void:
+	exploding = true
+	is_chasing = false
+	await get_tree().create_timer(0.2).timeout
+	damage_area.monitoring = true
+	sprite.play("explode")
+	explosion.play("explosion")
+	await get_tree().create_timer(0.8).timeout
+	queue_free()
+
+
+
+func _on_damage_area_body_entered(body: Node2D) -> void:
+	if body is PlayerController or body is Enemy:
+		if body.name != "goblin":
+			body.take_damage(80)
