@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dynrp0nqo54ff"]
+[gd_scene load_steps=12 format=3 uid="uid://dynrp0nqo54ff"]
 
 [ext_resource type="Script" uid="uid://1nbdstt2hf6u" path="res://scripts/frog.gd" id="1_qyo2l"]
 [ext_resource type="Texture2D" uid="uid://qlbq4ay2eq4n" path="res://icon.svg" id="2_qyo2l"]
@@ -8,7 +8,7 @@
 size = Vector2(12, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qyo2l"]
-size = Vector2(14, 14)
+size = Vector2(14, 4)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1g2vb"]
 atlas = ExtResource("3_rq8tc")
@@ -42,10 +42,14 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_qyo2l"]
 radius = 26.0192
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_rq8tc"]
+radius = 102.005
+
 [node name="Frog" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
 script = ExtResource("1_qyo2l")
+damage = 5
 sprite = NodePath("Sprite2D")
-hp = 50
+hp = 40
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
@@ -61,7 +65,7 @@ monitoring = false
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/DamageShape"]
-position = Vector2(13, 0)
+position = Vector2(13, -1)
 shape = SubResource("RectangleShape2D_qyo2l")
 debug_color = Color(0.991729, 0, 0.261704, 0.42)
 
@@ -78,6 +82,13 @@ frame_progress = 1.0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Detector"]
 shape = SubResource("CircleShape2D_qyo2l")
 
+[node name="ChasingArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChasingArea"]
+shape = SubResource("CircleShape2D_rq8tc")
+
 [connection signal="body_entered" from="Pivot/DamageShape" to="." method="_on_damage_shape_body_entered"]
 [connection signal="animation_finished" from="Pivot/Bite" to="." method="_on_bite_animation_finished"]
 [connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
+[connection signal="body_entered" from="ChasingArea" to="." method="_on_chasing_area_body_entered"]
+[connection signal="body_exited" from="ChasingArea" to="." method="_on_chasing_area_body_exited"]

@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://8k6uigu3m7aw"]
+
+[ext_resource type="Script" uid="uid://dtymw8ppq7eg6" path="res://scripts/bat.gd" id="1_cnldk"]
+[ext_resource type="Texture2D" uid="uid://qlbq4ay2eq4n" path="res://icon.svg" id="2_48wkk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ss3tx"]
+size = Vector2(4, 4)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lv0ya"]
+radius = 6.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5fn3r"]
+radius = 174.233
+
+[node name="Bat" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
+script = ExtResource("1_cnldk")
+damage = 0
+sprite = NodePath("Sprite2D")
+hp = 10
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.05, 0.05)
+texture = ExtResource("2_48wkk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ss3tx")
+one_way_collision = true
+
+[node name="BloodArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BloodArea"]
+shape = SubResource("CircleShape2D_lv0ya")
+
+[node name="ChasingArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChasingArea"]
+shape = SubResource("CircleShape2D_5fn3r")
+
+[connection signal="body_entered" from="BloodArea" to="." method="_on_blood_area_body_entered"]
+[connection signal="body_entered" from="ChasingArea" to="." method="_on_chasing_area_body_entered"]
+[connection signal="body_exited" from="ChasingArea" to="." method="_on_chasing_area_body_exited"]

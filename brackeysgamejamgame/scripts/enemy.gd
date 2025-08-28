@@ -4,12 +4,12 @@ class_name Enemy
 @export var damage: int = 10.0
 @export var sprite: Node2D
 @export var hp: int = 100.0
+var is_chasing: bool = false
 var immune: bool = false
-var deceleration: float = 10.0  # Lower = slower stop, tweak as needed
+var deceleration: float = 1000.0  # Lower = slower stop, tweak as needed
 
 func _physics_process(delta: float) -> void:
-	if hp <= 0:
-		await get_tree().create_timer(0.2).timeout
+	if hp <= 0 or hp == 0:
 		queue_free()
 	
 	# Just apply deceleration to stop smoothly
@@ -20,10 +20,12 @@ func _physics_process(delta: float) -> void:
 func take_damage(dm: int):
 	if immune:
 		return
+	is_chasing = false
 	hp -= dm
 	immune = true
 	sprite.modulate = Color(0, 0, 0)
 	await get_tree().create_timer(0.5).timeout
+	is_chasing = true
 	immune = false
 	sprite.modulate = Color(1, 1, 1)
 

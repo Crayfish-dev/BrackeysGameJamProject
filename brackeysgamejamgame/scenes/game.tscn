@@ -1,18 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://13x8hlbq2e2j"]
+[gd_scene load_steps=7 format=3 uid="uid://13x8hlbq2e2j"]
 
 [ext_resource type="PackedScene" uid="uid://bgwpyuhw31t8i" path="res://scenes/player.tscn" id="1_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://wfp0cqctysdl" path="res://scenes/camera.tscn" id="2_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://dynrp0nqo54ff" path="res://scenes/frog.tscn" id="3_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://bp1ls7o032ooh" path="res://scenes/archer.tscn" id="4_lbhrr"]
 [ext_resource type="PackedScene" uid="uid://cektdyyjuk86q" path="res://scenes/blood_bottle.tscn" id="5_iywne"]
+[ext_resource type="PackedScene" uid="uid://8k6uigu3m7aw" path="res://scenes/bat.tscn" id="6_p57ef"]
 
 [node name="Game" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_yqjtg")]
-position = Vector2(38, 30)
+position = Vector2(-51, -150)
 
 [node name="Camera" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_lnu2h")]
-position = Vector2(0, -3)
+position = Vector2(64, 13)
+zoom = Vector2(2, 2)
 position_smoothing_speed = 2.5
 player = NodePath("../Player")
 
@@ -23,7 +25,7 @@ position = Vector2(-45, 33)
 position = Vector2(76, -34)
 
 [node name="Frog3" parent="." instance=ExtResource("3_lnu2h")]
-position = Vector2(70, 50)
+position = Vector2(-195, -115)
 
 [node name="Archer" parent="." instance=ExtResource("4_lbhrr")]
 position = Vector2(224, 35)
@@ -45,3 +47,60 @@ position = Vector2(219, 32)
 
 [node name="BloodBottle6" parent="." instance=ExtResource("5_iywne")]
 position = Vector2(112, 129)
+
+[node name="Frog4" parent="." instance=ExtResource("3_lnu2h")]
+position = Vector2(-143, 170)
+
+[node name="Frog5" parent="." instance=ExtResource("3_lnu2h")]
+position = Vector2(-352, 123)
+
+[node name="Frog6" parent="." instance=ExtResource("3_lnu2h")]
+position = Vector2(-267, 226)
+
+[node name="Frog7" parent="." instance=ExtResource("3_lnu2h")]
+position = Vector2(195, 416)
+
+[node name="Archer2" parent="." instance=ExtResource("4_lbhrr")]
+position = Vector2(7, 271)
+
+[node name="BloodBottle7" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(-293, 40)
+
+[node name="BloodBottle8" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(-354, 279)
+
+[node name="BloodBottle9" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(-238, 48)
+
+[node name="BloodBottle10" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(-386, 3)
+
+[node name="BloodBottle11" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(-8, -143)
+
+[node name="BloodBottle12" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(-43, -150)
+
+[node name="BloodBottle13" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(290, -164)
+
+[node name="BloodBottle14" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(445, 105)
+
+[node name="BloodBottle15" parent="." instance=ExtResource("5_iywne")]
+position = Vector2(226, 217)
+
+[node name="Bat" parent="." instance=ExtResource("6_p57ef")]
+position = Vector2(44, -210)
+
+[node name="Bat2" parent="." instance=ExtResource("6_p57ef")]
+position = Vector2(-57, -104)
+
+[node name="Bat3" parent="." instance=ExtResource("6_p57ef")]
+position = Vector2(-11, -210)
+
+[node name="Bat4" parent="." instance=ExtResource("6_p57ef")]
+position = Vector2(-110, -217)
+
+[node name="Bat5" parent="." instance=ExtResource("6_p57ef")]
+position = Vector2(51, -177)

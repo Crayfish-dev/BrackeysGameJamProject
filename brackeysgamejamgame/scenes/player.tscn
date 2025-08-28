@@ -8,7 +8,7 @@
 size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
-size = Vector2(13, 13)
+size = Vector2(23, 15)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
 atlas = ExtResource("3_qhqgy")
@@ -56,7 +56,7 @@ position = Vector2(15, 0)
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageOrbitatingPoint/DamageBox"]
-position = Vector2(-1.5, 0.5)
+position = Vector2(-3.5, 0.5)
 shape = SubResource("RectangleShape2D_g2els")
 debug_color = Color(0.994529, 0, 0.220606, 0.42)
 

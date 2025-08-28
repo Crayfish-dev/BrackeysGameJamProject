@@ -1,16 +1,15 @@
 extends Enemy
 
-@onready var pivot: Node2D = $Pivot
 @onready var player: PlayerController = $"../Player"
-@onready var shape: Area2D = $Pivot/DamageShape
-@onready var detector: Area2D = $Detector
-@onready var bite: AnimatedSprite2D = $Pivot/Bite
+@onready var chasing_area: Area2D = $ChasingArea
+
+
 
 # Chasing behavior
-var move_speed: float = 70.0
+var move_speed: float = 100.0
 var target_position: Vector2
 var target_reached_threshold: float = 15.0
-var reposition_interval: float = 2
+var reposition_interval: float = 0.3
 var reposition_timer: float = 0.0
 
 # Knockback velocity and friction
@@ -42,39 +41,14 @@ func _physics_process(delta: float) -> void:
 	velocity = move_velocity + knockback_velocity
 	move_and_slide()
 
-func _process(delta: float) -> void:
-	if player:
-		pivot.look_at(player.position)
+
 
 func get_random_position_near_player(radius: float = 100.0) -> Vector2:
 	var angle = randf() * TAU
 	var offset = Vector2(cos(angle), sin(angle)) * randf_range(30, radius)
 	return player.global_position + offset
 
-func _on_damage_shape_body_entered(body: PlayerController) -> void:
-	body.take_damage(damage)
-	
-	# Knockback applied to the player
-	var knockback_direction = (body.global_position - global_position).normalized()
-	var knockback_strength = 250
-	var knockback_velocity_player = knockback_direction * knockback_strength
-	body.apply_knockback(knockback_velocity_player)
 
-
-	var player_knockback_strength = 400
-	var player_knockback = -knockback_direction * player_knockback_strength
-	knockback_velocity += player_knockback 
-
-func _on_detector_body_entered(body: PlayerController) -> void:
-	await get_tree().create_timer(0.3).timeout
-	shape.monitoring = true
-	bite.visible = true
-	bite.play("bite")
-	await get_tree().create_timer(0.1).timeout
-	shape.monitoring = false
-
-func _on_bite_animation_finished() -> void:
-	bite.visible = false
 
 func _on_chasing_area_body_entered(body: PlayerController) -> void:
 	is_chasing = true
@@ -83,3 +57,7 @@ func _on_chasing_area_body_entered(body: PlayerController) -> void:
 
 func _on_chasing_area_body_exited(body: PlayerController) -> void:
 	is_chasing = false
+
+
+func _on_blood_area_body_entered(body: PlayerController) -> void:
+	body.blood -= 5

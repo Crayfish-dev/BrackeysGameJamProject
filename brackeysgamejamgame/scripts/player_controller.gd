@@ -5,16 +5,18 @@ class_name PlayerController
 @onready var damage_point: Node2D = $DamageOrbitatingPoint
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var bite: AnimatedSprite2D = $DamageOrbitatingPoint/Bite
+@onready var collision: CollisionShape2D = $CollisionShape2D
 
 const max_speed: int = 90
 const acceleration: int = 10
 const friction: int = 16
 const dash_velocity := max_speed * 5
-const ATTACK_BOOST_STRENGTH := 150  # Velocity boost when attacking
+const ATTACK_BOOST_STRENGTH := 350  # Velocity boost when attacking
+var can_parry: bool = true
 var blood: int = 35
 var can_dash: bool = true
 var hp: int = 100
-var  immune: bool = false
+var immune: bool = false
 
 func _ready() -> void:
 	damage_box.monitoring = false
@@ -26,7 +28,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		await get_tree().create_timer(0.1).timeout
 		blood -= 1
-		hp += 2
+		hp += 5
 		return
 
 
@@ -38,12 +40,6 @@ func _physics_process(delta: float) -> void:
 		Input.get_action_strength("down") - Input.get_action_strength("up")
 	).normalized()
 
-		
-	if immune:
-		sprite.modulate = Color(0, 0, 0)
-	else:
-		sprite.modulate = Color(1, 1, 1)
-
 
 	if blood > 100:
 		blood = 100
@@ -53,14 +49,7 @@ func _physics_process(delta: float) -> void:
 		hp = 0
 	
 	if Input.is_action_just_pressed("attack") and blood >= 10 and immune == false:
-		blood -= 10
-		damage_box.monitoring = true
-		bite.visible = true
-		bite.play("bite")
-		var direction_to_mouse = (get_global_mouse_position() - global_position).normalized()
-		velocity += direction_to_mouse * ATTACK_BOOST_STRENGTH
-		await get_tree().create_timer(0.1).timeout
-		damage_box.monitoring = false
+		attack(10)
 
 	damage_point.look_at(get_global_mouse_position())
 	
@@ -78,12 +67,15 @@ func _physics_process(delta: float) -> void:
 	elif Input.is_action_pressed("down"):
 		ydirection = 1
 
-
 	if Input.is_action_just_pressed("dash") and can_dash:
+		collision.disabled = true
+		attack(1)
 		velocity.y = dash_velocity * ydirection
 		velocity.x = dash_velocity * direction
 		can_dash = false
-		await get_tree().create_timer(2.5).timeout
+		await get_tree().create_timer(0.5).timeout
+		collision.disabled = false
+		await get_tree().create_timer(0.5).timeout
 		can_dash = true
 
 	move_and_slide()
@@ -91,6 +83,7 @@ func _physics_process(delta: float) -> void:
 
 func _on_damage_box_body_entered(body: Enemy) -> void:
 	body.take_damage(10)
+	print(body.hp)
 	blood += 15
 	var knockback_direction = (body.global_position - global_position).normalized()
 	var knockback_strength = 250
@@ -104,7 +97,7 @@ func _on_damage_box_body_entered(body: Enemy) -> void:
 
 func _start_blood_drain() -> void:
 	while true:
-		await get_tree().create_timer(2).timeout
+		await get_tree().create_timer(4).timeout
 		blood = max(blood - 1, 0) 
 
 func take_damage(dm: int):
@@ -123,3 +116,13 @@ func apply_knockback(velocity: Vector2) -> void:
 
 func _on_bite_animation_finished() -> void:
 	bite.visible = false
+
+func attack(bl):
+		blood -= bl
+		damage_box.monitoring = true
+		bite.visible = true
+		bite.play("bite")
+		var direction_to_mouse = (get_global_mouse_position() - global_position).normalized()
+		velocity += direction_to_mouse * ATTACK_BOOST_STRENGTH
+		await get_tree().create_timer(0.1).timeout
+		damage_box.monitoring = false
