@@ -1,9 +1,10 @@
-[gd_scene load_steps=29 format=3 uid="uid://fd2s12si5xxw"]
+[gd_scene load_steps=32 format=3 uid="uid://fd2s12si5xxw"]
 
 [ext_resource type="Script" uid="uid://c56cc4rn3y627" path="res://scripts/goblin.gd" id="1_4yait"]
 [ext_resource type="Texture2D" uid="uid://cpnqvuymwydbr" path="res://assets/goblin.png" id="2_76chb"]
 [ext_resource type="Texture2D" uid="uid://bbndh06cpk7sf" path="res://assets/explosion.png" id="3_g1p1y"]
 [ext_resource type="Texture2D" uid="uid://cbys40sa8ypld" path="res://assets/emotion_points.png" id="3_q3g0h"]
+[ext_resource type="PackedScene" uid="uid://chuit4muup8jh" path="res://scenes/enemy_health_bar.tscn" id="5_g1p1y"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_76chb"]
 radius = 33.0
@@ -21,19 +22,27 @@ region = Rect2(64, 0, 32, 32)
 atlas = ExtResource("2_76chb")
 region = Rect2(0, 32, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_76chb"]
+atlas = ExtResource("2_76chb")
+region = Rect2(64, 32, 32, 32)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_vho8j"]
 atlas = ExtResource("2_76chb")
 region = Rect2(32, 32, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_g1p1y"]
+atlas = ExtResource("3_g1p1y")
+region = Rect2(512, 0, 128, 64)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_g2t3q"]
 atlas = ExtResource("2_76chb")
-region = Rect2(0, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_osho7"]
-atlas = ExtResource("2_76chb")
-region = Rect2(0, 0, 32, 32)
+region = Rect2(32, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_exsy4"]
+atlas = ExtResource("2_76chb")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_osho7"]
 atlas = ExtResource("2_76chb")
 region = Rect2(32, 0, 32, 32)
 
@@ -60,11 +69,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_vho8j")
+"texture": SubResource("AtlasTexture_76chb")
 }],
 "loop": true,
-"name": &"explode",
+"name": &"die",
 "speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vho8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g1p1y")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -76,10 +96,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_osho7")
+"texture": SubResource("AtlasTexture_exsy4")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_exsy4")
+"texture": SubResource("AtlasTexture_osho7")
 }],
 "loop": true,
 "name": &"front_walk",
@@ -245,7 +265,7 @@ shape = SubResource("CapsuleShape2D_76chb")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-3, -10)
 sprite_frames = SubResource("SpriteFrames_76chb")
-animation = &"explode"
+animation = &"front_walk"
 autoplay = "front_idle"
 
 [node name="Explosion" type="AnimatedSprite2D" parent="."]
@@ -279,7 +299,25 @@ visible = false
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_76chb")
 
+[node name="DamageAreaEnemies" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageAreaEnemies"]
+visible = false
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_76chb")
+
+[node name="EnemyHealthBar" parent="." node_paths=PackedStringArray("enemy") instance=ExtResource("5_g1p1y")]
+offset_left = -7.0
+offset_top = -6.0
+offset_right = 9.0
+offset_bottom = -5.0
+max_value = 10.0
+enemy = NodePath("..")
+
 [connection signal="body_entered" from="ExplosionArea" to="." method="_on_explosion_area_body_entered"]
 [connection signal="body_entered" from="ChasingArea" to="." method="_on_chasing_area_body_entered"]
 [connection signal="body_exited" from="ChasingArea" to="." method="_on_chasing_area_body_exited"]
 [connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]
+[connection signal="body_entered" from="DamageAreaEnemies" to="." method="_on_damage_area_enemies_body_entered"]
+[connection signal="body_entered" from="DamageAreaEnemies" to="." method="_on_damage_area_body_entered"]

@@ -1,8 +1,8 @@
 extends Enemy
 
-@onready var player: PlayerController = $"../../../Player"
 @onready var chasing_area: Area2D = $ChasingArea
 @onready var emotion: AnimatedSprite2D = $EmotionPoint
+@onready var blood: GPUParticles2D = $Blood
 
 
 
@@ -26,6 +26,8 @@ func _physics_process(delta: float) -> void:
 
 	
 	if hp <= 0 or hp == 0:
+		sprite.play("die")
+		await get_tree().create_timer(1).timeout
 		queue_free()
 	
 	var move_velocity = Vector2.ZERO  # Declare once here
@@ -58,14 +60,21 @@ func get_random_position_near_player(radius: float = 100.0) -> Vector2:
 
 
 func _on_chasing_area_body_entered(body: PlayerController) -> void:
+	if body.bat:
+		return
 	is_chasing = true
 	target_position = get_random_position_near_player()
 	reposition_timer = 0.0
 
 func _on_chasing_area_body_exited(body: PlayerController) -> void:
+	if body.bat:
+		return
 	emotion.play("exclamation")
 	is_chasing = false
 
 
 func _on_blood_area_body_entered(body: PlayerController) -> void:
+	if body.bat:
+		return
+	blood.emitting = true
 	body.blood -= 10

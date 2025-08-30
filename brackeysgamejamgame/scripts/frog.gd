@@ -1,7 +1,6 @@
 extends Enemy
 
 @onready var pivot: Node2D = $Pivot
-@onready var player: PlayerController = $"../../../Player"
 @onready var shape: Area2D = $Pivot/DamageShape
 @onready var detector: Area2D = $Detector
 @onready var bite: AnimatedSprite2D = $Pivot/Bite
@@ -19,11 +18,12 @@ var knockback_velocity: Vector2 = Vector2.ZERO
 var knockback_friction: float = 10000000000000000000.0  # Adjust this to control how fast knockback slows
 
 func _physics_process(delta: float) -> void:
-	
 	if hp <= 0 or hp == 0:
+		sprite.play("die")
+		await get_tree().create_timer(1).timeout
 		queue_free()
 	
-	var move_velocity = Vector2.ZERO  # Declare once here
+	var move_velocity = Vector2.ZERO
 
 	if is_chasing and player:
 		reposition_timer -= delta
@@ -35,15 +35,20 @@ func _physics_process(delta: float) -> void:
 		var direction = (target_position - global_position).normalized()
 		move_velocity = direction * move_speed
 	else:
-		move_velocity = Vector2.ZERO  # Just assign here
+		move_velocity = Vector2.ZERO
 
-	# Apply friction to knockback velocity so it slows down smoothly
+	# Apply knockback velocity with friction
 	knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, knockback_friction * delta)
 
 	velocity = move_velocity + knockback_velocity
 	move_and_slide()
 
+	# Sprite Animation and Flipping
 	if sprite:
+		# Flip horizontally based on X movement direction
+		if abs(velocity.x) > 5:
+			sprite.flip_h = velocity.x > 0  
+
 		if velocity.length() < 10:
 			if abs(velocity.y) > abs(velocity.x):
 				if velocity.y < 0:
@@ -61,7 +66,6 @@ func _physics_process(delta: float) -> void:
 			else:
 				sprite.play("front_walk")
 
-
 func _process(delta: float) -> void:
 	if player:
 		pivot.look_at(player.position)
@@ -72,6 +76,8 @@ func get_random_position_near_player(radius: float = 100.0) -> Vector2:
 	return player.global_position + offset
 
 func _on_damage_shape_body_entered(body: PlayerController) -> void:
+	if body.bat:
+		return
 	body.take_damage(damage)
 	
 	# Knockback applied to the player
@@ -85,6 +91,8 @@ func _on_damage_shape_body_entered(body: PlayerController) -> void:
 	knockback_velocity += player_knockback 
 
 func _on_detector_body_entered(body: PlayerController) -> void:
+	if body.bat:
+		return
 	await get_tree().create_timer(0.3).timeout
 	shape.monitoring = true
 	bite.visible = true
@@ -96,11 +104,15 @@ func _on_bite_animation_finished() -> void:
 	bite.visible = false
 
 func _on_chasing_area_body_entered(body: PlayerController) -> void:
+	if body.bat:
+		return
 	emotion.play("exclamation")
 	is_chasing = true
 	target_position = get_random_position_near_player()
 	reposition_timer = 0.0
 
 func _on_chasing_area_body_exited(body: PlayerController) -> void:
+	if body.bat:
+		return
 	emotion.play("wonder")
 	is_chasing = false

@@ -1,9 +1,10 @@
-[gd_scene load_steps=26 format=3 uid="uid://dynrp0nqo54ff"]
+[gd_scene load_steps=28 format=3 uid="uid://dynrp0nqo54ff"]
 
 [ext_resource type="Script" uid="uid://1nbdstt2hf6u" path="res://scripts/frog.gd" id="1_qyo2l"]
 [ext_resource type="Texture2D" uid="uid://c3l350d3tl0h1" path="res://assets/frog.png" id="2_rq8tc"]
 [ext_resource type="Texture2D" uid="uid://26sdktpw8cq3" path="res://assets/bite.png" id="3_rq8tc"]
 [ext_resource type="Texture2D" uid="uid://cbys40sa8ypld" path="res://assets/emotion_points.png" id="4_1g2vb"]
+[ext_resource type="PackedScene" uid="uid://chuit4muup8jh" path="res://scenes/enemy_health_bar.tscn" id="5_ybftx"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uu7fg"]
 atlas = ExtResource("2_rq8tc")
@@ -16,6 +17,10 @@ region = Rect2(64, 0, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_eqhdc"]
 atlas = ExtResource("2_rq8tc")
 region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jg4rb"]
+atlas = ExtResource("2_rq8tc")
+region = Rect2(128, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4au2m"]
 atlas = ExtResource("2_rq8tc")
@@ -52,6 +57,14 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_jg4rb")
+}],
+"loop": true,
+"name": &"die",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_4au2m")
 }],
 "loop": true,
@@ -74,7 +87,7 @@ animations = [{
 size = Vector2(13, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qyo2l"]
-size = Vector2(14, 4)
+size = Vector2(15, 8)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1g2vb"]
 atlas = ExtResource("3_rq8tc")
@@ -166,14 +179,13 @@ animations = [{
 
 [node name="Frog" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
 script = ExtResource("1_qyo2l")
-damage = 5
 sprite = NodePath("Sprite2D")
 hp = 40
 
 [node name="Sprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-2, -10)
 sprite_frames = SubResource("SpriteFrames_mokc4")
-animation = &"front_idle"
+animation = &"die"
 autoplay = "front_idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -188,7 +200,7 @@ monitoring = false
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/DamageShape"]
-position = Vector2(11, 1)
+position = Vector2(11.5, 1)
 shape = SubResource("RectangleShape2D_qyo2l")
 debug_color = Color(0.991729, 0, 0.261704, 0.42)
 
@@ -219,6 +231,14 @@ animation = &"wonder"
 autoplay = "none"
 frame = 1
 frame_progress = 1.0
+
+[node name="EnemyHealthBar" parent="." node_paths=PackedStringArray("enemy") instance=ExtResource("5_ybftx")]
+offset_left = -9.0
+offset_top = -9.0
+offset_right = 7.0
+offset_bottom = -8.0
+max_value = 40.0
+enemy = NodePath("..")
 
 [connection signal="body_entered" from="Pivot/DamageShape" to="." method="_on_damage_shape_body_entered"]
 [connection signal="animation_finished" from="Pivot/Bite" to="." method="_on_bite_animation_finished"]

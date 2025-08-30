@@ -1,16 +1,19 @@
 extends CharacterBody2D
 class_name Enemy
 
+@export var player: PlayerController
 @export var damage: int = 10.0
 @export var sprite: Node2D
 @export var hp: int = 100.0
+
 var is_chasing: bool = false
 var immune: bool = false
 var deceleration: float = 1000.0  # Lower = slower stop, tweak as needed
 
 func _physics_process(delta: float) -> void:
 	if hp <= 0 or hp == 0:
-		await get_tree().create_timer(0.3).timeout
+		sprite.play("die")
+		await get_tree().create_timer(1).timeout
 		queue_free()
 
 	
