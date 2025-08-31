@@ -49,7 +49,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_42v4m")
 }],
-"loop": true,
+"loop": false,
 "name": &"open",
 "speed": 5.0
 }]
@@ -66,10 +66,13 @@ shape = SubResource("RectangleShape2D_dan0d")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_e30b8")
-animation = &"closed"
+animation = &"open"
 
 [node name="OpeningArea" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="OpeningArea"]
 position = Vector2(6, 1)
 shape = SubResource("RectangleShape2D_j3b18")
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="body_entered" from="OpeningArea" to="." method="_on_opening_area_body_entered"]

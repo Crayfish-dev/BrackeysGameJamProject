@@ -12,7 +12,6 @@ class_name PlayerController
 @onready var bat_damage_area: Area2D = $BatDamageArea
 @onready var transformation: AnimatedSprite2D = $Transformation
 
-
 var bat: bool = false
 var can_be_bat: bool = true
 var max_speed: int = 90
@@ -22,7 +21,7 @@ const friction: int = 16
 var dash_velocity := max_speed * 5
 const ATTACK_BOOST_STRENGTH := 350
 var can_parry: bool = true
-var blood: int = 100
+var blood: int = 50
 var can_dash: bool = true
 var hp: int = 100
 var immune: bool = false
@@ -60,7 +59,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		await get_tree().create_timer(0.1).timeout
 		blood -= 1
-		hp += 10
+		hp += 5
 		return
 
 	# Death check
@@ -69,7 +68,7 @@ func _physics_process(delta: float) -> void:
 		await get_tree().create_timer(1).timeout
 		global_position = GameManager.get_checkpoint()
 		dead = false
-		blood = 100
+		blood = 50
 		hp = 100
 
 	# Movement input
@@ -104,7 +103,7 @@ func _physics_process(delta: float) -> void:
 
 	# Attack logic
 	if Input.is_action_just_pressed("attack") and blood >= 10 and not immune and not bat:
-		attack(1)
+		attack(8)
 
 	# Look direction
 	damage_point.look_at(get_global_mouse_position())
@@ -156,7 +155,7 @@ func _physics_process(delta: float) -> void:
 
 func _on_damage_box_body_entered(body: Enemy) -> void:
 	body.take_damage(10)
-	blood += 35
+	blood += 15
 	var knockback_direction = (body.global_position - global_position).normalized()
 	var knockback_strength = 250
 	var knockback_velocity = knockback_direction * knockback_strength

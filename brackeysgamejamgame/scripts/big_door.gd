@@ -1,6 +1,5 @@
 extends StaticBody2D
 
-var can_be_opened: bool = false
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
 
@@ -14,5 +13,5 @@ func _on_opening_area_body_entered(body: PlayerController) -> void:
 
 
 func _on_animated_sprite_2d_animation_finished() -> void:
-	if can_be_opened:
-		collision.disabled = true
+	collision.disabled = true
+	queue_free()
